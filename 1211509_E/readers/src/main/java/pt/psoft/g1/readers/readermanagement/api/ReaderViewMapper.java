@@ -1,0 +1,76 @@
+package pt.psoft.g1.readers.readermanagement.api;
+
+import org.mapstruct.IterableMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import pt.psoft.g1.readers.readermanagement.model.ReaderDetails;
+import pt.psoft.g1.readers.readermanagement.services.ReaderBookCountDTO;
+import pt.psoft.g1.readers.shared.api.MapperInterface;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Mapper(componentModel = "spring")
+public abstract class ReaderViewMapper extends MapperInterface {
+
+    @Named(value = "toReaderView")
+    @Mapping(target = "email", source = "reader.email")
+    @Mapping(target = "birthDate", source = "birthDate.birthDate")
+    @Mapping(target = "phoneNumber", source = "phoneNumber")
+    @Mapping(target = "gdprConsent", source = "gdprConsent")
+    @Mapping(target = "readerNumber", source = "readerNumber")
+    @Mapping(target = "photo", expression = "java(generatePhotoUrl(readerDetails))")
+    @Mapping(target = "interestList", expression = "java(mapInterestList(readerDetails.getInterestList()))")
+    public abstract ReaderView toReaderView(ReaderDetails readerDetails);
+
+    @Named("toReaderViewAMQP")
+    @Mapping(target = "email", source = "reader.email")
+    @Mapping(target = "fullName", source = "reader.name")
+    @Mapping(target = "birthDate", source = "birthDate.birthDate")
+    @Mapping(target = "phoneNumber", source = "phoneNumber")
+    @Mapping(target = "gdprConsent", source = "gdprConsent")
+    @Mapping(target = "photo", expression = "java(generatePhotoUrl(readerDetails))")
+    @Mapping(target = "interestList", source = "interestList")
+    public abstract ReaderViewAMQP toReaderViewAMQP(ReaderDetails readerDetails);
+
+    @Named(value = "toReaderQuoteView")
+    @Mapping(target = "birthDate", source = "birthDate.birthDate")
+    @Mapping(target = "phoneNumber", source = "phoneNumber")
+    @Mapping(target = "gdprConsent", source = "gdprConsent")
+    @Mapping(target = "readerNumber", source = "readerNumber")
+    @Mapping(target = "photo", expression = "java(generatePhotoUrl(readerDetails))")
+    @Mapping(target = "interestList", expression = "java(mapInterestList(readerDetails.getInterestList()))")
+    public abstract ReaderQuoteView toReaderQuoteView(ReaderDetails readerDetails);
+
+    @IterableMapping(qualifiedByName = "toReaderView")
+    public abstract List<ReaderView> toReaderView(Iterable<ReaderDetails> readerList);
+
+
+    @Mapping(target = "readerView", source = "readerDetails")
+    public abstract ReaderCountView toReaderCountView(ReaderBookCountDTO readerBookCountDTO);
+
+    public abstract List<ReaderCountView> toReaderCountViewList(List<ReaderBookCountDTO> readerBookCountDTOList);
+
+
+    protected String generatePhotoUrl(ReaderDetails readerDetails) {
+        String readerNumber = readerDetails.getReaderNumber();
+        String[] readerNumberSplit = readerNumber.split("/");
+        int year = Integer.parseInt(readerNumberSplit[0]);
+        int seq = Integer.parseInt(readerNumberSplit[1]);
+        return ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/readers/{year}/{seq}/photo").buildAndExpand(year,seq).toUri().toString();
+    }
+
+    protected List<String> mapInterestList(List<String> interestList) {
+        List<String> stringInterestList = new ArrayList<>();
+
+        if(interestList == null || interestList.isEmpty()) {
+            return stringInterestList;
+        }
+
+        stringInterestList.addAll(interestList);
+
+        return stringInterestList;
+    }
+}

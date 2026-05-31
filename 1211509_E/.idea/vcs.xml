@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/books" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lendings" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/psoft-project-2024-g1" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/readers" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/users" vcs="Git" />
+  </component>
+</project>

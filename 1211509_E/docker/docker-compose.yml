@@ -1,0 +1,107 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_in_lms_network
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_volume:/var/lib/postgresql
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - lms_network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_in_lms_network
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - lms_network
+
+  books:
+    build:
+      context: ../books
+      dockerfile: Dockerfile
+    container_name: books_service
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/books
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_RABBITMQ_HOST: rabbitmq
+    ports:
+      - "8081:8080"
+    networks:
+      - lms_network
+
+  users:
+    build:
+      context: ../users
+      dockerfile: Dockerfile
+    container_name: users_service
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/users
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_RABBITMQ_HOST: rabbitmq
+    ports:
+      - "8082:8080"
+    networks:
+      - lms_network
+
+  readers:
+    build:
+      context: ../readers
+      dockerfile: Dockerfile
+    container_name: readers_service
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/readers
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_RABBITMQ_HOST: rabbitmq
+    ports:
+      - "8083:8080"
+    networks:
+      - lms_network
+
+  lendings:
+    build:
+      context: ../lendings
+      dockerfile: Dockerfile
+    container_name: lendings_service
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lendings
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_RABBITMQ_HOST: rabbitmq
+    ports:
+      - "8084:8080"
+    networks:
+      - lms_network
+
+networks:
+  lms_network:
+    name: lms_network
+
+volumes:
+  postgres_volume:

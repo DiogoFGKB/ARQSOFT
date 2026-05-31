@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/books/Books.iml" filepath="$PROJECT_DIR$/books/Books.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lendings/Lendings.iml" filepath="$PROJECT_DIR$/lendings/Lendings.iml" />
+      <module fileurl="file://$PROJECT_DIR$/readers/Readers.iml" filepath="$PROJECT_DIR$/readers/Readers.iml" />
+      <module fileurl="file://$PROJECT_DIR$/users/Users.iml" filepath="$PROJECT_DIR$/users/Users.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/psoft-project-2024-g1.iml" filepath="$PROJECT_DIR$/.idea/psoft-project-2024-g1.iml" />
+    </modules>
+  </component>
+</project>
